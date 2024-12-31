@@ -31,7 +31,6 @@ Resources:
               Access-Control-Allow-Origin: "'*'"
               Access-Control-Allow-Headers: "'*'"
               Access-Control-Allow-Methods: "'*'"
-
   AccountsFunction:
     Type: AWS::Serverless::Function
     Properties:
