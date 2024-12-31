@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Accounts Lambda API
+
+Globals:
+  Function:
+    Runtime: java17
+    MemorySize: 2048
+    Timeout: 29
+
+Resources:
+  AccountsAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: "'*'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+        MaxAge: "'3600'"
+      GatewayResponses:
+        DEFAULT_4XX:
+          ResponseParameters:
+            Headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'*'"
+              Access-Control-Allow-Methods: "'*'"
+        DEFAULT_5XX:
+          ResponseParameters:
+            Headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'*'"
+              Access-Control-Allow-Methods: "'*'"
+
+  AccountsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.sikar.StreamLambdaHandler
+      CodeUri: target/serverless-lambda-springboot-api-0.0.1-SNAPSHOT-lambda-package.zip
+      AutoPublishAlias: live
+      Environment:
+        Variables:
+          RDS_ENDPOINT: database-2.cfmcu8kc0k61.us-east-1.rds.amazonaws.com
+          DB_NAME: accountsDB
+          DB_USERNAME: admin
+          DB_PASSWORD: bJQX9toEH1yvWjzps23o
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0aa6eade97a392183
+        SubnetIds:
+          - subnet-0f3d2f8c83f80ad50
+          - subnet-0b7d7919aa182b8e1
+          - subnet-00468e2b70b88c549
+          - subnet-07dab617b5bbb8644
+          - subnet-04b1578b3bc4da547
+          - subnet-0c33cb289f7631e73
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - AmazonRDSDataFullAccess
+        - AWSLambdaBasicExecutionRole
+      SnapStart:
+        ApplyOn: PublishedVersions
+      Events:
+        ApiEvents:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+            RestApiId: !Ref AccountsAPI
+
+Outputs:
+  AccountsEndpoint:
+    Description: API Gateway Accounts Endpoint
+    Value:
+      Fn::Sub: https://${AccountsAPI}.execute-api.${AWS::Region}.amazonaws.com/prod/
