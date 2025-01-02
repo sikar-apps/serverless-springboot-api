@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.sikar</groupId>
-	<artifactId>serverless-lambda-springboot-api</artifactId>
+	<artifactId>lambda-springboot-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>serverless-lambda-springboot-api</name>
 	<description>Demo project for Serverless Lambda Spring Boot</description>
@@ -46,6 +46,13 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.33</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-events -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-lambda-java-events</artifactId>
+			<version>3.11.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-resolver-dns-native-macos</artifactId>

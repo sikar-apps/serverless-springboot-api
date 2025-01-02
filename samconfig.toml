@@ -1,6 +1,6 @@
 version = 0.1
 [default.deploy.parameters]
-stack_name = "Sikar-Lambda-Stack"
+stack_name = "Sikar"
 resolve_s3 = true
 s3_prefix = "sikar-lambda-bucket"
 region = "us-east-1"

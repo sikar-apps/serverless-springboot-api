@@ -7,34 +7,12 @@ Globals:
     MemorySize: 2048
     Timeout: 29
 Resources:
-  AccountsAPI:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: prod
-      Cors:
-        AllowMethods: '''*'''
-        AllowHeaders: '''*'''
-        AllowOrigin: '''*'''
-        MaxAge: '''3600'''
-      GatewayResponses:
-        DEFAULT_4XX:
-          ResponseParameters:
-            Headers:
-              Access-Control-Allow-Origin: '''*'''
-              Access-Control-Allow-Headers: '''*'''
-              Access-Control-Allow-Methods: '''*'''
-        DEFAULT_5XX:
-          ResponseParameters:
-            Headers:
-              Access-Control-Allow-Origin: '''*'''
-              Access-Control-Allow-Headers: '''*'''
-              Access-Control-Allow-Methods: '''*'''
   AccountsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.sikar.StreamLambdaHandler
-      CodeUri: ../../target/serverless-lambda-springboot-api-0.0.1-SNAPSHOT-lambda-package.zip
-      AutoPublishAlias: live
+      Handler: com.sikar.StreamLambdaHandler::handleRequest
+      CodeUri: ../../target/lambda-springboot-api-0.0.1-SNAPSHOT-lambda-package.zip
+      AutoPublishAlias: liveQ
       Environment:
         Variables:
           RDS_ENDPOINT: database-2.cfmcu8kc0k61.us-east-1.rds.amazonaws.com
@@ -58,15 +36,63 @@ Resources:
       SnapStart:
         ApplyOn: PublishedVersions
       Events:
-        ApiEvents:
-          Type: Api
+        GetAccounts:
+          Type: HttpApi
           Properties:
-            Path: /{proxy+}
-            Method: ANY
-            RestApiId:
+            Path: /api/accounts
+            Method: GET
+            PayloadFormatVersion: '2.0'
+            ApiId:
               Ref: AccountsAPI
+        CreateAccount:
+          Type: HttpApi
+          Properties:
+            Path: /api/accounts
+            Method: POST
+            PayloadFormatVersion: '2.0'
+            ApiId:
+              Ref: AccountsAPI
+        GetAccount:
+          Type: HttpApi
+          Properties:
+            Path: /api/accounts/{accountNumber}
+            Method: GET
+            PayloadFormatVersion: '2.0'
+            ApiId:
+              Ref: AccountsAPI
+        DeleteAccount:
+          Type: HttpApi
+          Properties:
+            Path: /api/accounts/{id}
+            Method: DELETE
+            PayloadFormatVersion: '2.0'
+            ApiId:
+              Ref: AccountsAPI
+  AccountsAPI:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+      CorsConfiguration:
+        AllowMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+        - HEAD
+        AllowHeaders:
+        - Content-Type
+        - X-Amz-Date
+        - Authorization
+        - X-Api-Key
+        - X-Amz-Security-Token
+        AllowOrigins:
+        - '*'
+        ExposeHeaders:
+        - X-Total-Count
+        MaxAge: 3600
 Outputs:
   AccountsEndpoint:
-    Description: API Gateway Accounts Endpoint
+    Description: Http API Gateway Accounts Endpoint
     Value:
       Fn::Sub: https://${AccountsAPI}.execute-api.${AWS::Region}.amazonaws.com/prod/

@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/accounts")
+@RequestMapping("/prod/api/accounts")
 @RequiredArgsConstructor
 @Slf4j
 public class AccountController {
@@ -21,15 +22,16 @@ public class AccountController {
 
     @GetMapping("/{accountNumber}")
     public ResponseEntity<Account> getAccount(@PathVariable String accountNumber) {
-        return accountService.getAccount(accountNumber)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+       return accountService.getAccount(accountNumber)
+               .map(ResponseEntity::ok)
+               .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
     public ResponseEntity<List<Account>> getAllAccounts() {
         log.info("Getting all accounts");
         return ResponseEntity.ok(accountService.getAllAccounts());
+
     }
 
     @DeleteMapping("/{id}")
